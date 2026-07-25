@@ -156,30 +156,31 @@ const StudentManager = () => {
                   <label className="form-label">Email Address</label>
                   <input type="email" className="form-input" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
                 </div>
+                <div className="grid-cols-2">
                 <div className="form-group">
-                  <label className="form-label">Assigned Batch</label>
+                  <label className="form-label">Batch Selection</label>
                   <select className="form-select" value={formData.batch} onChange={e => setFormData({...formData, batch: e.target.value})}>
-                    <option value="SI Police Batch A">SI Police Batch A</option>
-                    <option value="Constable Direct Batch">Constable Direct Batch</option>
-                    <option value="Executive DSP Track">Executive DSP Track</option>
+                    <option>SI Police Batch A</option>
+                    <option>PC Batch B</option>
+                    <option>Weekend Special Batch</option>
                   </select>
                 </div>
                 <div className="form-group">
-                  <label className="form-label">Enrolled Course</label>
-                  <input type="text" className="form-input" value={formData.course} onChange={e => setFormData({...formData, course: e.target.value})} />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Total Course Fee (₹)</label>
-                  <input type="number" className="form-input" required value={formData.fee} onChange={e => setFormData({...formData, fee: Number(e.target.value)})} />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Amount Paid Initially (₹)</label>
-                  <input type="number" className="form-input" required value={formData.paid} onChange={e => setFormData({...formData, paid: Number(e.target.value)})} />
+                  <label className="form-label">Course Enrolled</label>
+                  <select className="form-select" required value={formData.course} onChange={e => {
+                    const course = e.target.value;
+                    const fee = course === 'PC Course' ? 7000 : course === 'SI Course' ? 10000 : 0;
+                    setFormData({...formData, course, fee, paid: 0});
+                  }}>
+                    <option value="" disabled>-- Select Course --</option>
+                    <option value="PC Course">Police Constable (PC) Course - ₹7,000</option>
+                    <option value="SI Course">Sub Inspector (SI) Course - ₹10,000</option>
+                  </select>
                 </div>
               </div>
 
               <div className="glass-card" style={{ marginTop: '20px', padding: '16px', background: 'var(--bg-primary)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: formData.messEnrollment ? '16px' : '0' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <input 
                     type="checkbox" 
                     id="messEnroll"
@@ -187,17 +188,11 @@ const StudentManager = () => {
                     checked={formData.messEnrollment} 
                     onChange={e => {
                       const isChecked = e.target.checked;
-                      setFormData({...formData, messEnrollment: isChecked, messFee: isChecked ? 3000 : 0})
+                      setFormData({...formData, messEnrollment: isChecked, messFee: isChecked ? 2800 : 0})
                     }} 
                   />
-                  <label htmlFor="messEnroll" className="form-label" style={{ marginBottom: 0, fontSize: '1rem', cursor: 'pointer' }}>Enroll in Academy Mess?</label>
+                  <label htmlFor="messEnroll" className="form-label" style={{ marginBottom: 0, fontSize: '1rem', cursor: 'pointer' }}>Enroll in Academy Mess? (₹2,800/month)</label>
                 </div>
-                {formData.messEnrollment && (
-                  <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label className="form-label">Mess Fee (₹)</label>
-                    <input type="number" className="form-input" required value={formData.messFee} onChange={e => setFormData({...formData, messFee: Number(e.target.value)})} />
-                  </div>
-                )}
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '32px' }}>

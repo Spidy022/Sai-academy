@@ -3,7 +3,7 @@ import { BookOpen, MonitorPlay, CheckCircle, UploadCloud } from 'lucide-react';
 import { saveCourse, saveBook } from '../firebase/firestore';
 
 const ContentManager = () => {
-  const [activeTab, setActiveTab] = useState('E-Books');
+  const [activeTab, setActiveTab] = useState('Materials');
   const [formData, setFormData] = useState({ title: '', category: 'General Knowledge', link: '', isPremium: false, description: '' });
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -14,7 +14,7 @@ const ContentManager = () => {
     setSuccess(false);
 
     try {
-      if (activeTab === 'E-Books') {
+      if (activeTab === 'Materials') {
         await saveBook({
           title: formData.title,
           category: formData.category,
@@ -22,13 +22,14 @@ const ContentManager = () => {
           isPremium: formData.isPremium,
           description: formData.description
         });
-      } else if (activeTab === 'Courses') {
+      } else if (activeTab === 'Videos') {
         await saveCourse({
           name: formData.title,
           description: formData.description,
           isPremium: formData.isPremium,
+          videoLink: formData.link,
           duration: "Self-Paced",
-          fee: formData.isPremium ? 5000 : 0
+          fee: 0
         });
       }
       setSuccess(true);
@@ -51,16 +52,16 @@ const ContentManager = () => {
       <div className="glass-card" style={{ marginBottom: '24px' }}>
         <div style={{ display: 'flex', gap: '12px' }}>
           <button 
-            className={`btn ${activeTab === 'E-Books' ? 'btn-primary' : 'btn-secondary'}`} 
-            onClick={() => setActiveTab('E-Books')}
+            className={`btn ${activeTab === 'Materials' ? 'btn-primary' : 'btn-secondary'}`} 
+            onClick={() => setActiveTab('Materials')}
           >
-            <BookOpen size={18} /> Digital Library (E-Books)
+            <BookOpen size={18} /> Study Materials (PDF)
           </button>
           <button 
-            className={`btn ${activeTab === 'Courses' ? 'btn-primary' : 'btn-secondary'}`} 
-            onClick={() => setActiveTab('Courses')}
+            className={`btn ${activeTab === 'Videos' ? 'btn-primary' : 'btn-secondary'}`} 
+            onClick={() => setActiveTab('Videos')}
           >
-            <MonitorPlay size={18} /> Academy Courses & Modules
+            <MonitorPlay size={18} /> Video Sessions
           </button>
         </div>
       </div>
@@ -68,7 +69,7 @@ const ContentManager = () => {
       <div className="glass-card">
         <h2 style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
           <UploadCloud size={24} color="var(--primary)" />
-          Upload New {activeTab === 'E-Books' ? 'E-Book / PDF' : 'Course Module'}
+          Upload New {activeTab === 'Materials' ? 'PDF Material' : 'Video Session'}
         </h2>
         
         {success && (
@@ -81,11 +82,11 @@ const ContentManager = () => {
         <form onSubmit={handleSubmit}>
           <div className="grid-cols-2">
             <div className="form-group">
-              <label className="form-label">{activeTab === 'E-Books' ? 'Book Title' : 'Course Name'}</label>
+              <label className="form-label">{activeTab === 'Materials' ? 'Material Title' : 'Session Name'}</label>
               <input type="text" className="form-input" required value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} placeholder="Enter title..." />
             </div>
             
-            {activeTab === 'E-Books' && (
+            {activeTab === 'Materials' && (
               <div className="form-group">
                 <label className="form-label">Category</label>
                 <select className="form-select" value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})}>
@@ -97,9 +98,16 @@ const ContentManager = () => {
               </div>
             )}
             
-            {activeTab === 'E-Books' && (
+            {activeTab === 'Materials' && (
               <div className="form-group" style={{ gridColumn: 'span 2' }}>
                 <label className="form-label">File Link (Google Drive / Firebase Storage URL)</label>
+                <input type="url" className="form-input" required value={formData.link} onChange={e => setFormData({...formData, link: e.target.value})} placeholder="https://..." />
+              </div>
+            )}
+            
+            {activeTab === 'Videos' && (
+              <div className="form-group" style={{ gridColumn: 'span 2' }}>
+                <label className="form-label">Video Session Link (YouTube / Vimeo)</label>
                 <input type="url" className="form-input" required value={formData.link} onChange={e => setFormData({...formData, link: e.target.value})} placeholder="https://..." />
               </div>
             )}

@@ -4,20 +4,27 @@ import { Search, Plus, CheckCircle, FileText } from 'lucide-react';
 import { useAuth } from '../firebase/auth';
 
 const PaymentTracker = () => {
-  const { isAdmin } = useAuth();
+  const { isAdmin, currentUser, userProfile } = useAuth();
   const [payments, setPayments] = useState([]);
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   
   // New Payment Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isUPIModalOpen, setIsUPIModalOpen] = useState(false);
   const [formData, setFormData] = useState({ studentDocId: '', amount: '', paymentMethod: 'UPI', remarks: '' });
   const [processing, setProcessing] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
-    const [pays, stus] = await Promise.all([getPayments(), getStudents()]);
-    // Sort payments by paidAt descending
+    let [pays, stus] = await Promise.all([getPayments(), getStudents()]);
+    
+    // Privacy Filtering: Students can only see their own records
+    if (!isAdmin() && currentUser) {
+      pays = pays.filter(p => p.studentDocId === currentUser.uid);
+      stus = stus.filter(s => s.id === currentUser.uid);
+    }
+
     setPayments(pays.sort((a, b) => b.paidAt - a.paidAt));
     setStudents(stus);
     setLoading(false);
@@ -48,13 +55,41 @@ const PaymentTracker = () => {
     fetchData(); // Refresh both payments and students balances
   };
 
+  const handleUPIPayment = async () => {
+    setProcessing(true);
+    // Student initiates their own payment
+    const student = students.find(s => s.id === currentUser.uid);
+    if (!student || student.balance <= 0) {
+      alert("No pending dues found.");
+      setProcessing(false);
+      return;
+    }
+    
+    await recordPayment({
+      studentDocId: currentUser.uid,
+      studentId: student.rollNumber || "",
+      studentName: student.name || userProfile?.name,
+      amount: student.balance,
+      paymentMethod: 'UPI_QR',
+      remarks: 'Self-Paid via Portal'
+    });
+    
+    setProcessing(false);
+    setIsUPIModalOpen(false);
+    fetchData();
+  };
+
   return (
     <div>
       <div className="page-header">
-        <h1 className="page-title">Fee Transactions & Payments</h1>
-        {isAdmin() && (
+        <h1 className="page-title">{isAdmin() ? 'Fee Transactions' : 'My Payment History'}</h1>
+        {isAdmin() ? (
           <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>
-            <Plus size={18} /> Record Payment
+            <Plus size={18} /> Record Admin Payment
+          </button>
+        ) : (
+          <button className="btn btn-success" onClick={() => setIsUPIModalOpen(true)} style={{ background: 'var(--success)' }}>
+            <CreditCard size={18} /> Pay Fees via UPI
           </button>
         )}
       </div>
@@ -150,6 +185,32 @@ const PaymentTracker = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Simulated UPI QR Gateway for Students */}
+      {isUPIModalOpen && !isAdmin() && (
+        <div className="modal-backdrop">
+          <div className="modal-content" style={{ textAlign: 'center', maxWidth: '400px' }}>
+            <h2 style={{ marginBottom: '16px' }}>UPI Payment Gateway</h2>
+            <p style={{ color: 'var(--text-muted)', marginBottom: '24px', fontSize: '0.9rem' }}>
+              Scan the QR Code below using any UPI App (GPay, PhonePe, Paytm) to securely clear your pending academy dues.
+            </p>
+            <div style={{ background: 'white', padding: '16px', borderRadius: '12px', display: 'inline-block', marginBottom: '24px' }}>
+              <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=saiacademy@upi&pn=Sai%20Academy&cu=INR" alt="UPI QR Code" style={{ width: '200px', height: '200px' }} />
+            </div>
+            
+            <div style={{ background: 'var(--warning-bg)', padding: '12px', borderRadius: 'var(--radius-sm)', marginBottom: '24px', fontSize: '0.85rem', color: 'var(--warning)' }}>
+              *This is a simulated secure gateway. Clicking the button below bypasses the actual scan for testing purposes.
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px' }}>
+              <button type="button" className="btn btn-secondary" onClick={() => setIsUPIModalOpen(false)} style={{ flex: 1 }}>Cancel</button>
+              <button type="button" className="btn btn-primary" onClick={handleUPIPayment} disabled={processing} style={{ flex: 1 }}>
+                {processing ? 'Processing...' : 'Simulate Payment Success'}
+              </button>
+            </div>
           </div>
         </div>
       )}

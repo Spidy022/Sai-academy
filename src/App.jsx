@@ -8,6 +8,7 @@ import StudentManager from './pages/StudentManager';
 import PaymentTracker from './pages/PaymentTracker';
 import Settings from './pages/Settings';
 import ContentManager from './pages/ContentManager';
+import MyProfile from './pages/MyProfile';
 
 // Placeholders for new Phase 2 Content Pages
 const FreeCourses = () => <div className="glass-card"><h2>Free Courses</h2><p>Accessible to all verified guests and students.</p></div>;
@@ -36,6 +37,7 @@ function App() {
             <Route path="/syllabus" element={<Syllabus />} />
             <Route path="/question-bank" element={<QuestionBank />} />
             <Route path="/payments" element={<PaymentTracker />} />
+            <Route path="/profile" element={<MyProfile />} />
             
             {/* Admin Only Routes */}
             <Route element={<RoleGuard requireAdmin={true} />}>

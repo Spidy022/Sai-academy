@@ -27,14 +27,15 @@ export const getStudents = async () => {
 };
 
 export const saveStudent = async (studentData, id = null) => {
-  const totalDue = Number(studentData.fee || 0) + (studentData.messEnrollment ? Number(studentData.messFee || 0) : 0);
+  const totalDue = Number(studentData.fee || 0) + (studentData.messEnrollment ? 2800 : 0);
   const currentPaid = Number(studentData.paid || 0);
   const newBalance = totalDue - currentPaid;
   
   const data = {
     ...studentData,
+    messFee: studentData.messEnrollment ? 2800 : 0,
     balance: newBalance,
-    feeStatus: newBalance <= 0 ? "PAID" : currentPaid > 0 ? "PARTIAL" : "PENDING",
+    feeStatus: newBalance <= 0 ? "PAID" : "PENDING",
     updatedAt: Date.now()
   };
   if (id) {

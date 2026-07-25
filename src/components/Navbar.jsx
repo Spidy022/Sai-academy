@@ -4,7 +4,7 @@ import { useAuth } from '../firebase/auth';
 
 const Navbar = ({ toggleSidebar }) => {
   const { userProfile, isAdmin } = useAuth();
-  const [theme, setTheme] = React.useState(localStorage.getItem('theme') || 'dark');
+  const [theme, setTheme] = React.useState(localStorage.getItem('theme') || 'light');
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -32,7 +32,7 @@ const Navbar = ({ toggleSidebar }) => {
           <span className="notification-dot"></span>
         </button>
         
-        <div className="user-profile-widget">
+        <div className="user-profile-widget" style={{ cursor: 'pointer' }} onClick={() => window.location.href='/profile'}>
           <div className="avatar">
             <User size={20} color="white" />
           </div>
