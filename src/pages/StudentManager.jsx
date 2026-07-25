@@ -11,7 +11,7 @@ const StudentManager = () => {
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  const [formData, setFormData] = useState({ name: '', rollNumber: '', phone: '', email: '', batch: 'SI Police Batch A', course: '', fee: 0, paid: 0 });
+  const [formData, setFormData] = useState({ name: '', rollNumber: '', phone: '', email: '', batch: 'SI Police Batch A', course: '', fee: 0, paid: 0, messEnrollment: false, messFee: 0 });
 
   const fetchStudents = async () => {
     setLoading(true);
@@ -26,13 +26,13 @@ const StudentManager = () => {
 
   const openAddModal = () => {
     setEditingId(null);
-    setFormData({ name: '', rollNumber: '', phone: '', email: '', batch: 'SI Police Batch A', course: '', fee: 0, paid: 0 });
+    setFormData({ name: '', rollNumber: '', phone: '', email: '', batch: 'SI Police Batch A', course: '', fee: 0, paid: 0, messEnrollment: false, messFee: 0 });
     setIsModalOpen(true);
   };
 
   const openEditModal = (student) => {
     setEditingId(student.id);
-    setFormData(student);
+    setFormData({ messEnrollment: false, messFee: 0, ...student });
     setIsModalOpen(true);
   };
 
@@ -177,6 +177,29 @@ const StudentManager = () => {
                   <input type="number" className="form-input" required value={formData.paid} onChange={e => setFormData({...formData, paid: Number(e.target.value)})} />
                 </div>
               </div>
+
+              <div className="glass-card" style={{ marginTop: '20px', padding: '16px', background: 'var(--bg-primary)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: formData.messEnrollment ? '16px' : '0' }}>
+                  <input 
+                    type="checkbox" 
+                    id="messEnroll"
+                    style={{ width: '18px', height: '18px' }}
+                    checked={formData.messEnrollment} 
+                    onChange={e => {
+                      const isChecked = e.target.checked;
+                      setFormData({...formData, messEnrollment: isChecked, messFee: isChecked ? 3000 : 0})
+                    }} 
+                  />
+                  <label htmlFor="messEnroll" className="form-label" style={{ marginBottom: 0, fontSize: '1rem', cursor: 'pointer' }}>Enroll in Academy Mess?</label>
+                </div>
+                {formData.messEnrollment && (
+                  <div className="form-group" style={{ marginBottom: 0 }}>
+                    <label className="form-label">Mess Fee (₹)</label>
+                    <input type="number" className="form-input" required value={formData.messFee} onChange={e => setFormData({...formData, messFee: Number(e.target.value)})} />
+                  </div>
+                )}
+              </div>
+
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '32px' }}>
                 <button type="button" className="btn btn-secondary" onClick={() => setIsModalOpen(false)}>Cancel</button>
                 <button type="submit" className="btn btn-primary">Save Student Record</button>

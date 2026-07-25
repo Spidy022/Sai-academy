@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import StatCard from '../components/StatCard';
+import LocationWidget from '../components/LocationWidget';
 import { useAuth } from '../firebase/auth';
 import { getStudents, getPayments, getCourses, getNotices } from '../firebase/firestore';
 import { Users, CreditCard, Banknote, BookOpen, AlertTriangle } from 'lucide-react';
@@ -123,6 +124,10 @@ const Dashboard = () => {
              Ensure all tuition and hostel dues are cleared before the upcoming preliminary examination.
            </p>
         </div>
+      </div>
+      
+      <div style={{ marginTop: '24px' }}>
+        <LocationWidget />
       </div>
     </div>
   );

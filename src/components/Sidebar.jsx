@@ -3,7 +3,8 @@ import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../firebase/auth';
 import { 
   LayoutDashboard, Users, CreditCard, ClipboardCheck, 
-  BookOpen, Bell, Settings, LogOut, Menu, X, MonitorPlay
+  BookOpen, Bell, Settings, LogOut, Menu, X, MonitorPlay,
+  Lock, Unlock, Link as LinkIcon, FileText, Database
 } from 'lucide-react';
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
@@ -16,15 +17,21 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     navigate('/login');
   };
 
+  // Restructured Tabs per Phase 2 requirements
   const navItems = [
-    { name: 'Dashboard', path: '/', icon: <LayoutDashboard size={20} />, adminOnly: false },
+    { name: 'Banner / Home', path: '/', icon: <LayoutDashboard size={20} />, adminOnly: false },
+    { name: 'Free Courses', path: '/free-courses', icon: <Unlock size={20} />, adminOnly: false },
+    { name: 'Paid Courses', path: '/premium-courses', icon: <Lock size={20} />, adminOnly: false },
+    { name: 'Links', path: '/links', icon: <LinkIcon size={20} />, adminOnly: false },
+    { name: 'E-books', path: '/ebooks', icon: <BookOpen size={20} />, adminOnly: false },
+    { name: 'Syllabus', path: '/syllabus', icon: <FileText size={20} />, adminOnly: false },
+    { name: 'Question Bank', path: '/question-bank', icon: <Database size={20} />, adminOnly: false },
+    
+    // Admin & Operational tools
     { name: 'Students', path: '/students', icon: <Users size={20} />, adminOnly: true },
     { name: 'Fees & Payments', path: '/payments', icon: <CreditCard size={20} />, adminOnly: false },
     { name: 'Attendance', path: '/attendance', icon: <ClipboardCheck size={20} />, adminOnly: true },
-    { name: 'Study Materials', path: '/materials', icon: <BookOpen size={20} />, adminOnly: false },
-    { name: 'Video Lectures', path: '/videos', icon: <MonitorPlay size={20} />, adminOnly: false },
-    { name: 'Notices', path: '/notices', icon: <Bell size={20} />, adminOnly: false },
-    { name: 'Settings', path: '/settings', icon: <Settings size={20} />, adminOnly: true }
+    { name: 'Settings & Admin', path: '/settings', icon: <Settings size={20} />, adminOnly: true }
   ];
 
   return (
@@ -39,7 +46,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             <div>
               <h2>Sai Academy</h2>
               <span className="badge badge-admin" style={{ fontSize: '10px', padding: '2px 8px' }}>
-                {isAdmin() ? 'Administrator' : 'Student Portal'}
+                {isAdmin() ? 'Administrator' : (userProfile?.premiumAccess ? 'Premium Student' : 'Guest')}
               </span>
             </div>
           </div>
@@ -51,7 +58,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         <nav className="sidebar-nav">
           <ul>
             {navItems.map((item, idx) => {
-              // Hide admin-only links if user is not admin
               if (item.adminOnly && !isAdmin()) return null;
               
               const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
