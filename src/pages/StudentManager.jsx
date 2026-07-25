@@ -156,7 +156,6 @@ const StudentManager = () => {
                   <label className="form-label">Email Address</label>
                   <input type="email" className="form-input" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
                 </div>
-                <div className="grid-cols-2">
                 <div className="form-group">
                   <label className="form-label">Batch Selection</label>
                   <select className="form-select" value={formData.batch} onChange={e => setFormData({...formData, batch: e.target.value})}>
