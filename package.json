@@ -1,26 +1,15 @@
 {
-  "name": "sai-academy",
+  "name": "sai-academy-monorepo",
   "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "version": "1.0.0",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "oxlint",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "firebase": "^12.16.0",
-    "lucide-react": "^1.26.0",
-    "react": "^19.2.7",
-    "react-dom": "^19.2.7",
-    "react-router-dom": "^7.18.1"
+    "dev": "concurrently \"npm --prefix frontend run dev\" \"python -m uvicorn backend.main:app --reload --port 8000\"",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "dev:backend": "python -m uvicorn backend.main:app --reload --port 8000",
+    "seed": "python backend/seed.py",
+    "build": "npm --prefix frontend run build"
   },
   "devDependencies": {
-    "@types/react": "^19.2.17",
-    "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^6.0.3",
-    "oxlint": "^1.71.0",
-    "vite": "^8.1.1"
+    "concurrently": "^8.2.2"
   }
 }

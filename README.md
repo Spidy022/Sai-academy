@@ -1,16 +1,58 @@
-# React + Vite
+# Sai Police Academy - Monorepo Portal
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+![Sai Police Academy Logo](frontend/public/logo.png)
 
-Currently, two official plugins are available:
+A full-stack educational management portal built for **Sai Police Academy**. 
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Features multi-role student/admin dashboards, course distribution, PDF question bank downloads, interactive mock exams, fee tracking, and downloadable payment receipts.
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 📁 Repository Structure
 
-## Expanding the Oxlint configuration
+```
+Sai-academy/
+├── backend/                      # Python FastAPI REST API Backend
+│   ├── config.py                 # Environment & app settings
+│   ├── database.py               # SQLAlchemy PostgreSQL / SQLite driver
+│   ├── models.py                 # Database ORM models
+│   ├── schemas.py                # Pydantic API validation schemas
+│   ├── seed.py                   # Auto-seeding database engine
+│   ├── main.py                   # FastAPI REST API handlers
+│   └── requirements.txt          # Python dependencies
+│
+├── frontend/                     # React 19 + Vite Frontend Application
+│   ├── public/                   # Static branding & assets
+│   │   └── logo.png              # Academy official logo badge
+│   ├── src/                      # Components, pages, and router
+│   ├── index.html                # Entry HTML file
+│   ├── package.json              # Frontend Node dependencies
+│   └── vite.config.js            # Vite config with API proxy
+│
+├── .gitignore                    # Git ignore specifications
+├── docker-compose.yml            # Containerized deployment specification
+├── package.json                  # Root monorepo script runner
+└── README.md
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+---
+
+## 🚀 Quick Start (Local Development)
+
+### 1. Install Dependencies
+```bash
+# Install Python backend requirements
+pip install -r backend/requirements.txt
+
+# Install Node dependencies
+npm install
+npm --prefix frontend install
+```
+
+### 2. Run Both Frontend & Backend Concurrently
+```bash
+npm run dev
+```
+
+* **Frontend Web App**: `http://localhost:5173`
+* **FastAPI Backend & Interactive Swagger API Docs**: `http://localhost:8000/docs`
