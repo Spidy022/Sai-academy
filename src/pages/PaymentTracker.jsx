@@ -150,26 +150,26 @@ const PaymentTracker = () => {
             <h2 style={{ marginBottom: '24px' }}>Record New Fee Payment</h2>
             <form onSubmit={handleRecordPayment}>
               <div className="form-group">
-                <label className="form-label">Select Student</label>
-                <select className="form-select" required value={formData.studentDocId} onChange={e => setFormData({...formData, studentDocId: e.target.value})}>
+                <label className="form-label">Select Student (Pending Dues)</label>
+                <select className="form-select" required value={formData.studentDocId} onChange={e => {
+                  const student = students.find(s => s.id === e.target.value);
+                  setFormData({...formData, studentDocId: e.target.value, amount: student ? student.balance : ''});
+                }}>
                   <option value="" disabled>-- Select Candidate --</option>
-                  {students.map(s => (
+                  {students.filter(s => s.balance > 0).map(s => (
                     <option key={s.id} value={s.id}>{s.rollNumber} - {s.name} (Due: ₹{s.balance})</option>
                   ))}
                 </select>
               </div>
               <div className="grid-cols-2">
                 <div className="form-group">
-                  <label className="form-label">Payment Amount (₹)</label>
-                  <input type="number" className="form-input" required min="1" value={formData.amount} onChange={e => setFormData({...formData, amount: e.target.value})} />
+                  <label className="form-label">Payment Amount (₹) - FULL FEE ONLY</label>
+                  <input type="number" className="form-input" required disabled value={formData.amount} onChange={e => setFormData({...formData, amount: e.target.value})} />
                 </div>
                 <div className="form-group">
                   <label className="form-label">Payment Method</label>
                   <select className="form-select" value={formData.paymentMethod} onChange={e => setFormData({...formData, paymentMethod: e.target.value})}>
                     <option value="UPI">UPI (GPay/PhonePe)</option>
-                    <option value="Cash">Cash (Counter)</option>
-                    <option value="Bank Transfer">NEFT/RTGS</option>
-                    <option value="Card">Credit/Debit Card</option>
                   </select>
                 </div>
               </div>

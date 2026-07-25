@@ -122,6 +122,15 @@ export const saveCourse = async (courseData) => {
   return { id: docRef.id, ...courseData };
 };
 
+export const deleteCourse = async (id) => {
+  await deleteDoc(doc(db, "courses", id));
+};
+
+export const updateCourse = async (id, courseData) => {
+  const docRef = doc(db, "courses", id);
+  await updateDoc(docRef, { ...courseData, updatedAt: Date.now() });
+};
+
 // --- BOOKS & STUDY MATERIALS SERVICE ---
 export const getBooks = async () => {
   try {
@@ -142,6 +151,15 @@ export const saveBook = async (bookData) => {
     createdAt: Date.now()
   });
   return { id: docRef.id, ...bookData };
+};
+
+export const deleteBook = async (id) => {
+  await deleteDoc(doc(db, "books", id));
+};
+
+export const updateBook = async (id, bookData) => {
+  const docRef = doc(db, "books", id);
+  await updateDoc(docRef, { ...bookData, updatedAt: Date.now() });
 };
 
 // --- NOTICES SERVICE ---

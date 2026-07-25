@@ -19,18 +19,20 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 
   // Restructured Tabs per Phase 2 requirements
   const navItems = [
-    { name: 'Banner / Home', path: '/', icon: <LayoutDashboard size={20} />, adminOnly: false },
+    { name: 'Public Site', path: '/', icon: <MonitorPlay size={20} />, adminOnly: false },
+    { name: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard size={20} />, adminOnly: false },
     { name: 'Free Courses', path: '/free-courses', icon: <Unlock size={20} />, adminOnly: false },
     { name: 'Paid Courses', path: '/premium-courses', icon: <Lock size={20} />, adminOnly: false },
     { name: 'Links', path: '/links', icon: <LinkIcon size={20} />, adminOnly: false },
     { name: 'E-books', path: '/ebooks', icon: <BookOpen size={20} />, adminOnly: false },
     { name: 'Syllabus', path: '/syllabus', icon: <FileText size={20} />, adminOnly: false },
     { name: 'Question Bank', path: '/question-bank', icon: <Database size={20} />, adminOnly: false },
+    { name: 'Enroll & Pay', path: '/enrollment', icon: <CreditCard size={20} />, adminOnly: false },
     
     // Admin & Operational tools
     { name: 'Students', path: '/students', icon: <Users size={20} />, adminOnly: true },
+    { name: 'Content Manager', path: '/content-manager', icon: <BookOpen size={20} />, adminOnly: true },
     { name: 'Fees & Payments', path: '/payments', icon: <CreditCard size={20} />, adminOnly: false },
-    { name: 'Attendance', path: '/attendance', icon: <ClipboardCheck size={20} />, adminOnly: true },
     { name: 'Settings & Admin', path: '/settings', icon: <Settings size={20} />, adminOnly: true }
   ];
 
@@ -43,17 +45,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         <div className="sidebar-header">
           <div className="logo">
             <div className="logo-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="url(#academy-gradient)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <defs>
-                  <linearGradient id="academy-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#3b82f6" />
-                    <stop offset="100%" stopColor="#8b5cf6" />
-                  </linearGradient>
-                </defs>
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/>
-                <path d="m8 11 4-2 4 2"/>
-                <path d="m8 15 4-2 4 2"/>
-              </svg>
+              <img src="/logo.png" alt="Sai Police Academy" style={{ width: '100%', height: '100%', objectFit: 'contain' }} onError={(e) => { e.target.style.display='none'; }} />
             </div>
             <div>
               <h2>Sai Academy</h2>

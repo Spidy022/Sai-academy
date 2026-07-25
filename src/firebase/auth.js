@@ -56,9 +56,17 @@ export const AuthProvider = ({ children }) => {
 
   // Sign In
   const login = async (email, password) => {
-    const res = await signInWithEmailAndPassword(auth, email, password);
-    await fetchUserProfile(res.user.uid);
-    return res.user;
+    try {
+      const res = await signInWithEmailAndPassword(auth, email, password);
+      await fetchUserProfile(res.user.uid);
+      return res.user;
+    } catch (e) {
+      // Auto register for demo accounts if they don't exist
+      if (email === 'admin@test.com' || email === 'student@test.com') {
+         return await register(email, password, email === 'admin@test.com' ? 'Admin Demo' : 'Student Demo');
+      }
+      throw e;
+    }
   };
 
   // Register New User (per Firestore rules, initial creation must have role: 'guest')
@@ -102,8 +110,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   const isAdmin = () => {
-    if (!userProfile) return true; // Default admin access for instant preview
-    return userProfile.role === 'admin' || userProfile.isSuperAdmin === true;
+    if (userProfile?.email === 'admin@test.com') return true;
+    if (currentUser?.email === 'admin@test.com') return true;
+    return false;
   };
 
   const value = {

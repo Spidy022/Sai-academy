@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getStudents, saveStudent } from '../firebase/firestore';
-import { Search, Plus, Edit2, ShieldAlert } from 'lucide-react';
+import { Search, Plus, Edit2, Eye, ShieldAlert, CheckCircle, Clock, Mail } from 'lucide-react';
 
 const StudentManager = () => {
   const [students, setStudents] = useState([]);
@@ -10,6 +10,7 @@ const StudentManager = () => {
   
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [viewDetailsStudent, setViewDetailsStudent] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({ name: '', rollNumber: '', phone: '', email: '', batch: 'SI Police Batch A', course: '', fee: 0, paid: 0, messEnrollment: false, messFee: 0 });
 
@@ -50,6 +51,11 @@ const StudentManager = () => {
     return matchesSearch && matchesStatus;
   });
 
+  // Calculate Summary Statistics
+  const totalStudents = students.length;
+  const totalPaid = students.filter(s => s.feeStatus === 'PAID').length;
+  const totalPending = students.filter(s => s.feeStatus === 'PENDING' || s.feeStatus === 'PARTIAL' || s.feeStatus === 'OVERDUE').length;
+
   return (
     <div>
       <div className="page-header">
@@ -59,21 +65,55 @@ const StudentManager = () => {
         </button>
       </div>
 
-      <div className="glass-card" style={{ marginBottom: '24px' }}>
+      {/* Summary Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '24px' }}>
+        <div className="glass-card mount-animate delay-1" style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '24px' }}>
+          <div style={{ padding: '12px', background: 'rgba(59, 130, 246, 0.1)', borderRadius: '12px', color: 'var(--primary)' }}>
+            <Search size={32} />
+          </div>
+          <div>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '4px' }}>Total Enrolled Students</p>
+            <h2 style={{ fontSize: '1.8rem', margin: 0 }}>{totalStudents}</h2>
+          </div>
+        </div>
+        
+        <div className="glass-card mount-animate delay-2" style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '24px' }}>
+          <div style={{ padding: '12px', background: 'var(--success-bg)', borderRadius: '12px', color: 'var(--success)' }}>
+            <CheckCircle size={32} />
+          </div>
+          <div>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '4px' }}>Fully Paid Members</p>
+            <h2 style={{ fontSize: '1.8rem', margin: 0 }}>{totalPaid}</h2>
+          </div>
+        </div>
+        
+        <div className="glass-card mount-animate delay-3" style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '24px' }}>
+          <div style={{ padding: '12px', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '12px', color: 'var(--danger)' }}>
+            <Clock size={32} />
+          </div>
+          <div>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '4px' }}>Pending/Overdue Payments</p>
+            <h2 style={{ fontSize: '1.8rem', margin: 0 }}>{totalPending}</h2>
+          </div>
+        </div>
+      </div>
+
+      {/* Filters and Search */}
+      <div className="glass-card mount-animate delay-2" style={{ marginBottom: '24px' }}>
         <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
           <div style={{ flex: 1, minWidth: '250px', position: 'relative' }}>
             <Search size={18} style={{ position: 'absolute', left: '12px', top: '14px', color: 'var(--text-muted)' }} />
             <input 
               type="text" 
               className="form-input" 
-              placeholder="Search by name or roll number..." 
+              placeholder="Search by name or reg number..." 
               style={{ paddingLeft: '40px' }}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <div style={{ display: 'flex', gap: '8px' }}>
-            {['ALL', 'PAID', 'PARTIAL', 'PENDING', 'OVERDUE'].map(status => (
+            {['ALL', 'PAID', 'PENDING'].map(status => (
               <button 
                 key={status}
                 className={`btn btn-sm ${filterStatus === status ? 'btn-primary' : 'btn-secondary'}`}
@@ -90,7 +130,7 @@ const StudentManager = () => {
         <table className="data-table">
           <thead>
             <tr>
-              <th>Roll No.</th>
+              <th>Reg No.</th>
               <th>Student Name</th>
               <th>Contact</th>
               <th>Batch</th>
@@ -124,9 +164,22 @@ const StudentManager = () => {
                   </span>
                 </td>
                 <td>
-                  <button className="icon-btn" style={{ width: '32px', height: '32px' }} onClick={() => openEditModal(student)}>
-                    <Edit2 size={16} color="var(--text-secondary)" />
-                  </button>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    {student.feeStatus === 'PENDING' && student.email && (
+                      <a href={`mailto:${student.email}?subject=Sai Academy - Pending Fee Reminder&body=Dear ${student.name},%0D%0A%0D%0AThis is a reminder that you have a pending balance of Rs. ${student.balance} for your course/mess fees at Sai Police Academy.%0D%0A%0D%0APlease clear your dues at the earliest.%0D%0A%0D%0ARegards,%0D%0AAdmin, Sai Police Academy`} 
+                         className="icon-btn" 
+                         style={{ width: '32px', height: '32px', background: 'rgba(239, 68, 68, 0.1)' }} 
+                         title="Send Email Reminder">
+                        <Mail size={16} color="var(--danger)" />
+                      </a>
+                    )}
+                    <button className="icon-btn" style={{ width: '32px', height: '32px' }} onClick={() => setViewDetailsStudent(student)} title="View Details">
+                      <Eye size={16} color="var(--primary)" />
+                    </button>
+                    <button className="icon-btn" style={{ width: '32px', height: '32px' }} onClick={() => openEditModal(student)} title="Edit Record">
+                      <Edit2 size={16} color="var(--text-secondary)" />
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -134,6 +187,64 @@ const StudentManager = () => {
         </table>
       </div>
 
+      {/* View Individual Details Modal */}
+      {viewDetailsStudent && (
+        <div className="modal-backdrop" onClick={() => setViewDetailsStudent(null)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '600px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
+              <div>
+                <h2 style={{ marginBottom: '4px' }}>{viewDetailsStudent.name}</h2>
+                <span className={`badge badge-${(viewDetailsStudent.feeStatus || 'pending').toLowerCase()}`}>
+                  {viewDetailsStudent.feeStatus}
+                </span>
+              </div>
+              <button className="btn btn-secondary" onClick={() => setViewDetailsStudent(null)}>Close</button>
+            </div>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+              <div style={{ background: 'var(--bg-primary)', padding: '16px', borderRadius: '8px' }}>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '4px' }}>Registration / Roll No</p>
+                <p style={{ fontWeight: 600 }}>{viewDetailsStudent.rollNumber}</p>
+              </div>
+              <div style={{ background: 'var(--bg-primary)', padding: '16px', borderRadius: '8px' }}>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '4px' }}>Batch & Course</p>
+                <p style={{ fontWeight: 600 }}>{viewDetailsStudent.batch}</p>
+                <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>{viewDetailsStudent.course}</p>
+              </div>
+              
+              <div style={{ background: 'var(--bg-primary)', padding: '16px', borderRadius: '8px' }}>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '4px' }}>Contact Information</p>
+                <p style={{ fontWeight: 600 }}>{viewDetailsStudent.phone}</p>
+                <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>{viewDetailsStudent.email}</p>
+              </div>
+              <div style={{ background: 'var(--bg-primary)', padding: '16px', borderRadius: '8px' }}>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '4px' }}>Mess Enrollment</p>
+                <p style={{ fontWeight: 600 }}>{viewDetailsStudent.messEnrollment ? 'Enrolled (₹2,800)' : 'Not Enrolled'}</p>
+              </div>
+            </div>
+            
+            <div style={{ marginTop: '24px', borderTop: '1px solid var(--border-glass)', paddingTop: '24px' }}>
+              <h3 style={{ marginBottom: '16px', fontSize: '1.1rem' }}>Financial Breakdown</h3>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
+                <span style={{ color: 'var(--text-secondary)' }}>Total Assessment Fee</span>
+                <span style={{ fontWeight: 600 }}>₹{Number(viewDetailsStudent.fee || 0).toLocaleString()}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
+                <span style={{ color: 'var(--text-secondary)' }}>Total Amount Paid</span>
+                <span style={{ fontWeight: 600, color: 'var(--success)' }}>₹{Number(viewDetailsStudent.paid || 0).toLocaleString()}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '12px', paddingTop: '12px', borderTop: '1px dashed var(--border-glass)' }}>
+                <span style={{ fontWeight: 600 }}>Current Balance Due</span>
+                <span style={{ fontWeight: 700, color: viewDetailsStudent.balance > 0 ? 'var(--danger)' : 'var(--success)' }}>
+                  ₹{Number(viewDetailsStudent.balance || 0).toLocaleString()}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add / Edit Form Modal */}
       {isModalOpen && (
         <div className="modal-backdrop">
           <div className="modal-content">
@@ -145,7 +256,7 @@ const StudentManager = () => {
                   <input type="text" className="form-input" required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
                 </div>
                 <div className="form-group">
-                  <label className="form-label">Roll Number</label>
+                  <label className="form-label">Reg / Roll Number</label>
                   <input type="text" className="form-input" required value={formData.rollNumber} onChange={e => setFormData({...formData, rollNumber: e.target.value})} />
                 </div>
                 <div className="form-group">
@@ -172,8 +283,8 @@ const StudentManager = () => {
                     setFormData({...formData, course, fee, paid: 0});
                   }}>
                     <option value="" disabled>-- Select Course --</option>
-                    <option value="PC Course">Police Constable (PC) Course - ₹7,000</option>
-                    <option value="SI Course">Sub Inspector (SI) Course - ₹10,000</option>
+                    <option value="PC Course">Police Constable (PC) - ₹7,000</option>
+                    <option value="SI Course">Sub Inspector (SI) - ₹10,000</option>
                   </select>
                 </div>
               </div>
