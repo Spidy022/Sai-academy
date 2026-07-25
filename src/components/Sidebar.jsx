@@ -42,7 +42,19 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
       <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
           <div className="logo">
-            <div className="logo-icon">S</div>
+            <div className="logo-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="url(#academy-gradient)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <defs>
+                  <linearGradient id="academy-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#3b82f6" />
+                    <stop offset="100%" stopColor="#8b5cf6" />
+                  </linearGradient>
+                </defs>
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/>
+                <path d="m8 11 4-2 4 2"/>
+                <path d="m8 15 4-2 4 2"/>
+              </svg>
+            </div>
             <div>
               <h2>Sai Academy</h2>
               <span className="badge badge-admin" style={{ fontSize: '10px', padding: '2px 8px' }}>
@@ -112,16 +124,9 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         .logo-icon {
           width: 40px;
           height: 40px;
-          border-radius: var(--radius-md);
-          background: var(--primary-gradient);
-          color: white;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-family: var(--font-heading);
-          font-size: 1.5rem;
-          font-weight: 800;
-          box-shadow: var(--shadow-glow);
         }
         .logo h2 {
           font-size: 1.25rem;

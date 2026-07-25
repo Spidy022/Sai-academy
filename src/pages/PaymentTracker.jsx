@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getPayments, getStudents, recordPayment } from '../firebase/firestore';
-import { Search, Plus, CheckCircle, FileText } from 'lucide-react';
+import { Search, Plus, CheckCircle, FileText, CreditCard } from 'lucide-react';
 import { useAuth } from '../firebase/auth';
 
 const PaymentTracker = () => {

@@ -94,6 +94,7 @@ const ContentManager = () => {
                   <option value="Law & Policing">Law & Policing</option>
                   <option value="Aptitude & Reasoning">Aptitude & Reasoning</option>
                   <option value="Current Affairs">Current Affairs</option>
+                  <option value="Question Bank (Mock Tests)">Question Bank (Mock Tests)</option>
                 </select>
               </div>
             )}
