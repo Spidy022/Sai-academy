@@ -13,10 +13,11 @@ try:
     # Test connection
     with engine.connect() as conn:
         pass
-    print(f"Connected to PostgreSQL database at {settings.POSTGRES_SERVER}:{settings.POSTGRES_PORT}")
 except Exception as e:
-    print(f"PostgreSQL server not available locally ({e}). Falling back to local backend/sai_academy.db database.")
-    SQLITE_URL = "sqlite:///./backend/sai_academy.db"
+    print(f"PostgreSQL server not available locally ({e}). Falling back to local SQLite database.")
+    db_dir = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.join(db_dir, "sai_academy.db")
+    SQLITE_URL = f"sqlite:///{db_path}"
     engine = create_engine(SQLITE_URL, connect_args={"check_same_thread": False})
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
