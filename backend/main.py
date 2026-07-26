@@ -1,6 +1,12 @@
 import time
 import random
+import sys
+import os
 from typing import List, Optional
+
+# Ensure parent directory is in import path when running inside backend/ folder on Render
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
